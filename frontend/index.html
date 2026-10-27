@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Decentralized Voting DApp</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ─── Header ──────────────────────────────────────────────── -->
+    <header>
+      <h1>🗳️ Decentralized Voting DApp</h1>
+      <button id="connectBtn" class="btn btn-primary">
+        🔗 Connect Wallet
+      </button>
+    </header>
+
+    <!-- ─── Status Bar ──────────────────────────────────────────── -->
+    <div id="statusBar" class="status-bar hidden"></div>
+
+    <!-- ─── Main Content ────────────────────────────────────────── -->
+    <main>
+      <!-- Wallet Info -->
+      <section id="walletInfo" class="card hidden">
+        <h2>Wallet Info</h2>
+        <p>
+          <strong>Address:</strong>
+          <span id="walletAddress">—</span>
+        </p>
+        <p>
+          <strong>Network:</strong>
+          <span id="networkName">—</span>
+        </p>
+        <p>
+          <strong>Your Status:</strong>
+          <span id="voteStatus">—</span>
+        </p>
+      </section>
+
+      <!-- Owner Panel (visible only to contract owner) -->
+      <section id="ownerPanel" class="card hidden">
+        <h2>👑 Owner Panel — Add Candidate</h2>
+        <div class="input-group">
+          <input
+            id="candidateNameInput"
+            type="text"
+            placeholder="Candidate name…"
+          />
+          <button id="addCandidateBtn" class="btn btn-secondary">
+            ➕ Add
+          </button>
+        </div>
+      </section>
+
+      <!-- Candidates List -->
+      <section id="candidatesSection" class="card hidden">
+        <h2>Candidates</h2>
+        <div id="candidatesList" class="candidates-grid">
+          <!-- Populated dynamically -->
+        </div>
+        <p id="noCandidates" class="muted hidden">
+          No candidates added yet.
+        </p>
+      </section>
+    </main>
+
+    <!-- ─── Footer ──────────────────────────────────────────────── -->
+    <footer>
+      <p>
+        Built with ❤️ using Solidity, Ethers.js &amp; Sepolia Testnet
+      </p>
+    </footer>
+
+    <!-- ethers.js v6 via CDN -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"
+      integrity="sha512-v8Rm/FjJRWOyLNUMfJOPYyXTviGaGrmvIp3SOZZ4jAFgaZyMh8mSa4PjloNKGnntmDsJb2yVMgd4vNH0mvqpw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,239 @@
+/* ─── CSS Variables & Reset ─────────────────────────────────── */
+:root {
+  --primary: #6c5ce7;
+  --primary-hover: #5a4bd1;
+  --secondary: #00b894;
+  --secondary-hover: #00a382;
+  --bg: #0f0f1a;
+  --surface: #1a1a2e;
+  --surface-hover: #22223a;
+  --text: #e0e0e0;
+  --text-muted: #888;
+  --border: #2d2d44;
+  --danger: #d63031;
+  --success: #00b894;
+  --warning: #fdcb6e;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Header ───────────────────────────────────────────────── */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Buttons ──────────────────────────────────────────────── */
+.btn {
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: #fff;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--secondary-hover);
+}
+
+.btn-vote {
+  background: var(--primary);
+  color: #fff;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.55rem;
+}
+.btn-vote:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+/* ─── Status Bar ───────────────────────────────────────────── */
+.status-bar {
+  padding: 0.75rem 2rem;
+  text-align: center;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+.status-bar.info {
+  background: #2d3436;
+  color: var(--warning);
+}
+.status-bar.success {
+  background: #1e3a2f;
+  color: var(--success);
+}
+.status-bar.error {
+  background: #3a1e1e;
+  color: var(--danger);
+}
+
+/* ─── Cards ────────────────────────────────────────────────── */
+main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.card h2 {
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+
+/* ─── Input Group ──────────────────────────────────────────── */
+.input-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.input-group input:focus {
+  border-color: var(--primary);
+}
+
+/* ─── Candidates Grid ──────────────────────────────────────── */
+.candidates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.candidate-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: center;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.candidate-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.candidate-card .id-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+
+.candidate-card .name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.candidate-card .votes {
+  color: var(--secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ─── Utilities ────────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+.muted {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ─── Footer ───────────────────────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── Responsive ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  main {
+    padding: 1rem;
+  }
+  .input-group {
+    flex-direction: column;
+  }
+}
