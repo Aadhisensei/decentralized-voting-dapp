@@ -4,80 +4,144 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Decentralized Voting DApp</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <!-- ─── Header ──────────────────────────────────────────────── -->
     <header>
-      <h1>🗳️ Decentralized Voting DApp</h1>
-      <button id="connectBtn" class="btn btn-primary">
-        🔗 Connect Wallet
-      </button>
+      <div class="logo">
+        <span class="logo-icon">🗳️</span>
+        <h1>VoteChain</h1>
+      </div>
+      <div class="header-right">
+        <span id="networkBadge" class="network-badge hidden">
+          <span class="pulse"></span> Sepolia
+        </span>
+        <button id="connectBtn" class="btn btn-connect">
+          🔗 Connect Wallet
+        </button>
+      </div>
     </header>
 
     <!-- ─── Status Bar ──────────────────────────────────────────── -->
     <div id="statusBar" class="status-bar hidden"></div>
 
-    <!-- ─── Main Content ────────────────────────────────────────── -->
-    <main>
+    <!-- ─── Hero Section (visible before wallet connect) ────────── -->
+    <section id="heroSection" class="hero">
+      <div class="hero-content">
+        <h2 class="hero-title">
+          Transparent. Immutable.<br />
+          <span class="gradient-text">Decentralized Voting.</span>
+        </h2>
+        <p class="hero-subtitle">
+          Cast your vote on the Ethereum blockchain. Every vote is verifiable,
+          tamper-proof, and permanently recorded on-chain.
+        </p>
+        <div class="hero-features">
+          <div class="feature">
+            <span class="feature-icon">🔒</span>
+            <span>One Vote Per Wallet</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">⛓️</span>
+            <span>On-Chain Storage</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">👁️</span>
+            <span>Fully Transparent</span>
+          </div>
+        </div>
+        <button id="heroConnectBtn" class="btn btn-hero">
+          🦊 Connect MetaMask to Start
+        </button>
+      </div>
+      <div class="hero-visual">
+        <div class="floating-card fc1">🗳️</div>
+        <div class="floating-card fc2">⛓️</div>
+        <div class="floating-card fc3">✅</div>
+      </div>
+    </section>
+
+    <!-- ─── Main Content (shown after wallet connect) ───────────── -->
+    <main id="mainContent" class="hidden">
       <!-- Wallet Info -->
-      <section id="walletInfo" class="card hidden">
-        <h2>Wallet Info</h2>
-        <p>
-          <strong>Address:</strong>
-          <span id="walletAddress">—</span>
-        </p>
-        <p>
-          <strong>Network:</strong>
-          <span id="networkName">—</span>
-        </p>
-        <p>
-          <strong>Your Status:</strong>
-          <span id="voteStatus">—</span>
-        </p>
+      <section id="walletInfo" class="card wallet-card">
+        <div class="card-header">
+          <h2>👤 Wallet Connected</h2>
+        </div>
+        <div class="wallet-details">
+          <div class="wallet-detail">
+            <span class="label">Address</span>
+            <span id="walletAddress" class="value address">—</span>
+          </div>
+          <div class="wallet-detail">
+            <span class="label">Network</span>
+            <span id="networkName" class="value">—</span>
+          </div>
+          <div class="wallet-detail">
+            <span class="label">Vote Status</span>
+            <span id="voteStatus" class="value">—</span>
+          </div>
+        </div>
       </section>
 
       <!-- Owner Panel (visible only to contract owner) -->
-      <section id="ownerPanel" class="card hidden">
-        <h2>👑 Owner Panel — Add Candidate</h2>
+      <section id="ownerPanel" class="card owner-card hidden">
+        <div class="card-header">
+          <h2>👑 Admin Panel</h2>
+          <span class="badge badge-owner">Contract Owner</span>
+        </div>
+        <p class="card-desc">Add new candidates to the ballot.</p>
         <div class="input-group">
           <input
             id="candidateNameInput"
             type="text"
-            placeholder="Candidate name…"
+            placeholder="Enter candidate name…"
           />
-          <button id="addCandidateBtn" class="btn btn-secondary">
-            ➕ Add
+          <button id="addCandidateBtn" class="btn btn-add">
+            ➕ Add Candidate
           </button>
         </div>
       </section>
 
       <!-- Candidates List -->
-      <section id="candidatesSection" class="card hidden">
-        <h2>Candidates</h2>
+      <section id="candidatesSection" class="card">
+        <div class="card-header">
+          <h2>📊 Live Results</h2>
+          <span id="totalVotes" class="badge badge-votes">0 total votes</span>
+        </div>
         <div id="candidatesList" class="candidates-grid">
           <!-- Populated dynamically -->
         </div>
-        <p id="noCandidates" class="muted hidden">
-          No candidates added yet.
-        </p>
+        <div id="noCandidates" class="empty-state hidden">
+          <span class="empty-icon">📭</span>
+          <p>No candidates added yet.</p>
+          <p class="muted">The contract owner needs to add candidates first.</p>
+        </div>
       </section>
     </main>
 
     <!-- ─── Footer ──────────────────────────────────────────────── -->
     <footer>
       <p>
-        Built with ❤️ using Solidity, Ethers.js &amp; Sepolia Testnet
+        Built with ❤️ using <strong>Solidity</strong>,
+        <strong>Ethers.js</strong> &amp; <strong>Sepolia Testnet</strong>
+      </p>
+      <p class="footer-sub">
+        <a
+          href="https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd"
+          target="_blank"
+          >View Contract on Etherscan ↗</a
+        >
       </p>
     </footer>
 
     <!-- ethers.js v6 via CDN -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"
-      integrity="sha512-v8Rm/FjJRWOyLNUMfJOPYyXTviGaGrmvIp3SOZZ4jAFgaZyMh8mSa4PjloNKGnntmDsJb2yVMgd4vNH0mvqpw=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
