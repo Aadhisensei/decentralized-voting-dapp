@@ -38,7 +38,6 @@ This Decentralized Voting DApp allows an owner to add candidates and lets users 
 - 👑 **Owner Panel** — Contract deployer can add new candidates
 - 📊 **Live Vote Count** — Real-time vote tallies displayed on the UI
 - 🔄 **Auto-refresh** — UI updates automatically when new votes/candidates are added
-- 🌙 **Modern Dark UI** — Clean, responsive design that works on desktop & mobile
 - ⚡ **Event Driven** — Listens to smart contract events for instant UI updates
 
 ---
