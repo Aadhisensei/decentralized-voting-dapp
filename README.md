@@ -1,238 +1,111 @@
-# 🗳️ Decentralized Voting DApp
+# VoteChain - Decentralized Voting DApp
 
-A fully decentralized voting application built on the Ethereum blockchain. Users can connect their MetaMask wallet, view candidates, and cast a vote — all transparently recorded on-chain.
+A blockchain-based voting application where users can vote for candidates through a clean web interface. All votes are recorded on the Ethereum Sepolia testnet, making them transparent, tamper-proof, and verifiable by anyone.
 
-![Voting DApp Screenshot](screenshots/dapp-ui.png)
+![VoteChain UI](screenshots/dapp-ui.png)
 
----
+## Features
 
-## 📋 Table of Contents
+- **Wallet Integration** - Connect your MetaMask wallet with one click
+- **On-Chain Voting** - Every vote is permanently stored on the blockchain
+- **One Vote Per Wallet** - The smart contract ensures each address can only vote once
+- **Admin Controls** - The contract deployer can add new candidates
+- **Live Results** - Vote counts update in real-time with visual progress bars
+- **Network Validation** - Automatically prompts users to switch to Sepolia if needed
 
-- [Project Description](#-project-description)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Prerequisites](#-prerequisites)
-- [Steps to Deploy the Smart Contract](#-steps-to-deploy-the-smart-contract)
-- [Steps to Run the Frontend](#-steps-to-run-the-frontend)
-- [Contract Details](#-contract-details)
-- [Smart Contract Functions](#-smart-contract-functions)
-- [Project Structure](#-project-structure)
-- [Screenshots](#-screenshots)
-- [License](#-license)
+## Contract Details
 
----
+| Field            | Value |
+|------------------|-------|
+| Network          | Sepolia Testnet |
+| Contract Address | `0x5ef786300ADB12516801513885C193e25ec58cDd` |
+| Solidity Version | ^0.8.19 |
+| Etherscan        | [View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd) |
 
-## 📖 Project Description
+## Tech Stack
 
-This Decentralized Voting DApp allows an owner to add candidates and lets users vote for their preferred candidate. Each wallet address can vote only once, ensuring fairness. All data is stored on the Ethereum Sepolia testnet, making it transparent, immutable, and tamper-proof.
+- **Smart Contract** - Solidity, Hardhat
+- **Frontend** - HTML, CSS, JavaScript
+- **Web3** - ethers.js v6
+- **Wallet** - MetaMask
+- **Network** - Ethereum Sepolia Testnet
 
-**Use Case:** Community elections, club polls, DAO governance proposals, or any scenario requiring a transparent and trustless voting mechanism.
+## How to Deploy the Smart Contract
 
----
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Aadhisensei/decentralized-voting-dapp.git
+   cd decentralized-voting-dapp
+   ```
 
-## ✨ Features
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-- 🔗 **MetaMask Wallet Connection** — Seamless one-click wallet integration
-- 🗳️ **On-chain Voting** — Votes are stored immutably on the Ethereum blockchain
-- 🛡️ **One Vote Per Address** — Smart contract enforces single-vote-per-wallet rule
-- 👑 **Owner Panel** — Contract deployer can add new candidates
-- 📊 **Live Vote Count** — Real-time vote tallies displayed on the UI
-- 🔄 **Auto-refresh** — UI updates automatically when new votes/candidates are added
-- ⚡ **Event Driven** — Listens to smart contract events for instant UI updates
+3. Create a `.env` file from the template and add your credentials:
+   ```bash
+   cp .env.example .env
+   ```
+   ```env
+   SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+   PRIVATE_KEY=0xYOUR_PRIVATE_KEY
+   ```
 
----
+4. Compile the contract:
+   ```bash
+   npx hardhat compile
+   ```
 
-## 🛠️ Tech Stack
+5. Deploy to Sepolia:
+   ```bash
+   npx hardhat run scripts/deploy.js --network sepolia
+   ```
 
-| Layer          | Technology              |
-| -------------- | ----------------------- |
-| Smart Contract | Solidity ^0.8.19        |
-| Blockchain     | Ethereum Sepolia Testnet|
-| Dev Framework  | Hardhat                 |
-| Frontend       | HTML / CSS / JavaScript |
-| Web3 Library   | ethers.js v6            |
-| Wallet         | MetaMask                |
+6. Copy the deployed contract address and paste it into `frontend/app.js` on line 7.
 
----
+## How to Run the Frontend
 
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-1. **Node.js** (v18+ recommended) — [Download](https://nodejs.org/)
-2. **MetaMask** browser extension — [Install](https://metamask.io/)
-3. **Sepolia Test ETH** — Get from a faucet:
-   - [Sepolia PoW Faucet](https://sepolia-faucet.pk910.de/)
-   - [Alchemy Sepolia Faucet](https://sepoliafaucet.com/)
-4. **Alchemy or Infura Account** (for RPC URL) — [Alchemy](https://www.alchemy.com/) | [Infura](https://www.infura.io/)
-
----
-
-## 🚀 Steps to Deploy the Smart Contract
-
-### 1. Clone the Repository
+No build step needed. Just open the frontend folder with any local server:
 
 ```bash
-git clone https://github.com/Aadhisensei/decentralized-voting-dapp.git
-cd decentralized-voting-dapp
-```
-
-### 2. Install Dependencies
-
-```bash
-npm install
-```
-
-### 3. Configure Environment Variables
-
-```bash
-cp .env.example .env
-```
-
-Edit the `.env` file and fill in:
-
-```env
-SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_API_KEY
-PRIVATE_KEY=0xYOUR_METAMASK_PRIVATE_KEY
-```
-
-> ⚠️ **IMPORTANT:** Never commit your `.env` file or share your private key!
-
-### 4. Compile the Smart Contract
-
-```bash
-npx hardhat compile
-```
-
-### 5. Deploy to Sepolia Testnet
-
-```bash
-npx hardhat run scripts/deploy.js --network sepolia
-```
-
-You'll see output like:
-
-```
-Deploying Voting contract...
-
-✅  Voting contract deployed to: 0xABC123...
-    Network: sepolia
-
-👉  Copy this address into frontend/app.js (CONTRACT_ADDRESS constant)
-```
-
-### 6. Update Frontend with Contract Address
-
-Open `frontend/app.js` and replace:
-
-```js
-const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
-```
-
-with your deployed contract address:
-
-```js
-const CONTRACT_ADDRESS = "0xABC123..."; // your actual address
-```
-
----
-
-## 🖥️ Steps to Run the Frontend
-
-The frontend is a static HTML/CSS/JS application — no build step required!
-
-### Option A: Open Directly
-
-Simply open `frontend/index.html` in your browser.
-
-### Option B: Use a Local Server (recommended)
-
-Using VS Code Live Server extension, or:
-
-```bash
-# Using Python
-cd frontend
-python -m http.server 5500
-
-# Or using Node.js
 npx serve frontend
 ```
 
-Then open `http://localhost:5500` in your browser.
+Then open `http://localhost:3000` in your browser.
 
-### Using the DApp
+Alternatively, you can open `frontend/index.html` directly in your browser.
 
-1. Click **"🔗 Connect Wallet"** to connect MetaMask
-2. Switch to **Sepolia** testnet if prompted
-3. If you're the contract owner, use the **Owner Panel** to add candidates
-4. Click **"Vote"** on your preferred candidate
+### Usage
+
+1. Click **Connect MetaMask to Start**
+2. Switch to Sepolia testnet if prompted
+3. If you deployed the contract, you'll see the Admin Panel to add candidates
+4. Click **Cast Vote** on your preferred candidate
 5. Confirm the transaction in MetaMask
-6. Watch the vote count update in real-time!
 
----
-
-## 📝 Contract Details
-
-| Property          | Value                                            |
-| ----------------- | ------------------------------------------------ |
-| **Contract Name** | Voting                                           |
-| **Solidity**      | ^0.8.19                                          |
-| **Network**       | Sepolia Testnet                                  |
-| **Contract Address** | `0x5ef786300ADB12516801513885C193e25ec58cDd` |
-| **Block Explorer**| [Sepolia Etherscan](https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd) |
-
----
-
-## 📜 Smart Contract Functions
-
-| Function                  | Access   | Description                              |
-| ------------------------- | -------- | ---------------------------------------- |
-| `addCandidate(name)`      | Owner    | Add a new candidate to the ballot        |
-| `vote(candidateId)`       | Public   | Cast a vote for a candidate              |
-| `getCandidate(id)`        | Public   | Get candidate details (id, name, votes)  |
-| `getCandidateCount()`     | Public   | Get total number of candidates           |
-| `hasVoted(address)`       | Public   | Check if an address has already voted    |
-| `owner()`                 | Public   | Get the contract owner's address         |
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
-decentralized-voting-dapp/
 ├── contracts/
-│   └── Voting.sol            # Solidity smart contract
+│   └── Voting.sol            # Smart contract
 ├── scripts/
-│   └── deploy.js             # Hardhat deployment script
+│   └── deploy.js             # Deployment script
 ├── frontend/
-│   ├── index.html            # Main UI page
-│   ├── app.js                # Frontend logic (ethers.js)
-│   └── style.css             # Styles (dark theme)
+│   ├── index.html            # Main page
+│   ├── app.js                # Web3 logic (ethers.js)
+│   └── style.css             # Styling
 ├── screenshots/
 │   └── dapp-ui.png           # UI screenshot
-├── hardhat.config.js         # Hardhat configuration
-├── package.json              # Node dependencies
-├── .env.example              # Environment variables template
-├── .gitignore                # Files to ignore in git
-└── README.md                 # This file
+├── hardhat.config.js         # Hardhat config
+├── .env.example              # Environment template
+└── README.md
 ```
 
----
+## Screenshots
 
-## 📸 Screenshots
+![VoteChain DApp](screenshots/dapp-ui.png)
 
-### Main Voting Interface
+## License
 
-![DApp UI](screenshots/dapp-ui.png)
-
-*The main interface showing connected wallet, candidate list with vote counts, and the owner panel for adding candidates.*
-
----
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-**Made with ❤️ for Blockchain Development**
+[MIT](LICENSE)
