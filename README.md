@@ -179,8 +179,8 @@ Then open `http://localhost:5500` in your browser.
 | **Contract Name** | Voting                                           |
 | **Solidity**      | ^0.8.19                                          |
 | **Network**       | Sepolia Testnet                                  |
-| **Contract Address** | `<TO_BE_UPDATED_AFTER_DEPLOYMENT>`            |
-| **Block Explorer**| [Sepolia Etherscan](https://sepolia.etherscan.io/address/<CONTRACT_ADDRESS>) |
+| **Contract Address** | `0x5ef786300ADB12516801513885C193e25ec58cDd` |
+| **Block Explorer**| [Sepolia Etherscan](https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd) |
 
 ---
 

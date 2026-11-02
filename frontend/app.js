@@ -5,7 +5,7 @@
 
 // ─── Configuration ──────────────────────────────────────────────
 // 🔴  REPLACE this with your deployed contract address
-const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
+const CONTRACT_ADDRESS = "0x5ef786300ADB12516801513885C193e25ec58cDd";
 
 // Sepolia chain ID (decimal)
 const SEPOLIA_CHAIN_ID = "0xaa36a7"; // 11155111
