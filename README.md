@@ -2,7 +2,7 @@
 
 A blockchain-based voting application where users can vote for candidates through a clean web interface. All votes are recorded on the Ethereum Sepolia testnet, making them transparent, tamper-proof, and verifiable by anyone.
 
-![VoteChain UI](screenshots/dapp-ui.png)
+![VoteChain UI](screenshots/1.png)
 
 ## Features
 
@@ -104,7 +104,11 @@ Alternatively, you can open `frontend/index.html` directly in your browser.
 
 ## Screenshots
 
-![VoteChain DApp](screenshots/dapp-ui.png)
+![Screenshot 1](screenshots/1.png)
+![Screenshot 2](screenshots/2.png)
+![Screenshot 3](screenshots/3.png)
+![Screenshot 4](screenshots/4.png)
+![Screenshot 5](screenshots/5.png)
 
 ## License
 
