@@ -73,7 +73,7 @@ Before you begin, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/decentralized-voting-dapp.git
+git clone https://github.com/Aadhisensei/decentralized-voting-dapp.git
 cd decentralized-voting-dapp
 ```
 

@@ -13,3 +13,6 @@ typechain-types/
 # OS
 .DS_Store
 Thumbs.db
+
+# Unrelated folders
+sanborn_maps/
