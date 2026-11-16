@@ -132,7 +132,7 @@ async function connectWallet() {
 
     // Vote status
     const voted = await contract.hasVoted(userAddress);
-    voteStatusEl.textContent = voted ? "✅ You have already voted" : "🗳️ You haven't voted yet";
+    voteStatusEl.textContent = voted ? "✅ Vote has been cast" : "🗳️ Not voted yet";
     voteStatusEl.style.color = voted ? "#10b981" : "#f59e0b";
 
     showStatus("✅ Wallet connected successfully!", "success");
@@ -222,7 +222,7 @@ async function loadCandidates() {
     });
 
     // Vote status
-    voteStatusEl.textContent = voted ? "✅ You have already voted" : "🗳️ You haven't voted yet";
+    voteStatusEl.textContent = voted ? "✅ Vote has been cast" : "🗳️ Not voted yet";
     voteStatusEl.style.color = voted ? "#10b981" : "#f59e0b";
   } catch (err) {
     console.error("Error loading candidates:", err);
@@ -232,7 +232,7 @@ async function loadCandidates() {
 // Cast Vote
 async function castVote(candidateId) {
   try {
-    showStatus("Submitting your vote... please confirm in MetaMask.", "info");
+    showStatus("Submitting vote... please confirm in MetaMask.", "info");
     const tx = await contract.vote(candidateId);
     showStatus("Transaction submitted! Waiting for blockchain confirmation...", "info");
     await tx.wait();

@@ -51,7 +51,7 @@
               <div class="step-number">1</div>
               <div class="step-icon">🦊</div>
               <div class="step-label">Connect Wallet</div>
-              <div class="step-desc">Link your MetaMask wallet to the DApp</div>
+              <div class="step-desc">Link MetaMask wallet to the DApp</div>
             </div>
             <div class="step-arrow">→</div>
             <div class="step-item">
@@ -64,7 +64,7 @@
             <div class="step-item">
               <div class="step-number">3</div>
               <div class="step-icon">🗳️</div>
-              <div class="step-label">Cast Your Vote</div>
+              <div class="step-label">Cast a Vote</div>
               <div class="step-desc">Choose a candidate and confirm on-chain</div>
             </div>
             <div class="step-arrow">→</div>
@@ -80,7 +80,7 @@
         <button id="heroConnectBtn" class="btn btn-hero">
           🦊 Connect MetaMask to Get Started
         </button>
-        <p class="hero-note">Make sure you're on the <strong>Sepolia Test Network</strong> in MetaMask</p>
+        <p class="hero-note">Requires <strong>Sepolia Test Network</strong> selected in MetaMask</p>
       </div>
     </section>
 
@@ -115,7 +115,7 @@
         <div class="card-header">
           <h2>✅ Step 1: Wallet Connected</h2>
         </div>
-        <p class="card-desc">Your MetaMask wallet is linked to the DApp. All transactions will be signed using this wallet.</p>
+        <p class="card-desc">MetaMask wallet is linked to the DApp. All transactions will be signed using this wallet address.</p>
         <div class="wallet-details">
           <div class="wallet-detail">
             <span class="label">Wallet Address</span>
@@ -126,12 +126,12 @@
             <span id="networkName" class="value">-</span>
           </div>
           <div class="wallet-detail">
-            <span class="label">Your Vote Status</span>
+            <span class="label">Vote Status</span>
             <span id="voteStatus" class="value">-</span>
           </div>
         </div>
         <div class="info-box">
-          💡 Your wallet address acts as your unique voter ID on the blockchain. Each address can vote only once.
+          💡 The wallet address acts as a unique voter ID on the blockchain. Each address can vote only once.
         </div>
       </section>
 
@@ -139,10 +139,10 @@
       <section id="ownerPanel" class="card owner-card hidden">
         <div class="card-header">
           <h2>📝 Step 2: Add Candidates</h2>
-          <span class="badge badge-owner">You are the Contract Owner</span>
+          <span class="badge badge-owner">Contract Owner</span>
         </div>
         <p class="card-desc">
-          As the contract deployer, you can add candidates to the ballot. This calls the
+          The contract deployer can add candidates to the ballot. This calls the
           <code>addCandidate()</code> function on the smart contract, which stores the candidate name on-chain.
         </p>
         <div class="input-group">
@@ -156,19 +156,19 @@
           </button>
         </div>
         <div class="info-box">
-          💡 Each "Add Candidate" action creates a blockchain transaction. You'll need to confirm it in MetaMask and pay a small gas fee (in test ETH).
+          💡 Each "Add Candidate" action creates a blockchain transaction. It needs to be confirmed in MetaMask with a small gas fee (in test ETH).
         </div>
       </section>
 
       <!-- Candidates & Voting -->
       <section id="candidatesSection" class="card">
         <div class="card-header">
-          <h2>🗳️ Step 3: Cast Your Vote</h2>
+          <h2>🗳️ Step 3: Cast a Vote</h2>
           <span id="totalVotes" class="badge badge-votes">0 total votes</span>
         </div>
         <p class="card-desc">
-          Click "Cast Vote" on your preferred candidate. This calls the <code>vote()</code> function
-          on the smart contract. The contract checks you haven't voted before, then records your vote permanently on the blockchain.
+          Click "Cast Vote" on a preferred candidate. This calls the <code>vote()</code> function
+          on the smart contract. The contract verifies the address hasn't voted before, then records the vote permanently on the blockchain.
         </p>
         <div id="candidatesList" class="candidates-grid"></div>
         <div id="noCandidates" class="empty-state hidden">
@@ -177,7 +177,7 @@
           <p class="muted">The contract owner needs to add candidates first using the Admin Panel above.</p>
         </div>
         <div class="info-box">
-          💡 Once you vote, the smart contract's <code>hasVoted</code> mapping marks your address as "voted", preventing double-voting. This logic runs entirely on-chain.
+          💡 Once a vote is cast, the smart contract's <code>hasVoted</code> mapping marks that address as "voted", preventing double-voting. This logic runs entirely on-chain.
         </div>
       </section>
 
@@ -208,12 +208,12 @@
           <div class="tech-item">
             <div class="tech-icon">🌐</div>
             <h4>Frontend (HTML/CSS/JS)</h4>
-            <p>This web page connects to the blockchain using ethers.js. It reads data from the contract and sends transactions when you vote.</p>
+            <p>This web page connects to the blockchain using ethers.js. It reads data from the contract and sends transactions when a vote is cast.</p>
           </div>
           <div class="tech-item">
             <div class="tech-icon">🦊</div>
             <h4>MetaMask Wallet</h4>
-            <p>MetaMask signs your transactions with your private key and broadcasts them to the Sepolia test network.</p>
+            <p>MetaMask signs transactions with the wallet's private key and broadcasts them to the Sepolia test network.</p>
           </div>
           <div class="tech-item">
             <div class="tech-icon">⛓️</div>
