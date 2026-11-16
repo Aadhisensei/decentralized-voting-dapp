@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoteChain - Decentralized Voting DApp</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <span class="logo-icon">🗳️</span>
+        <h1>VoteChain</h1>
+      </div>
+      <div class="header-right">
+        <span id="networkBadge" class="network-badge hidden">
+          <span class="pulse"></span> Sepolia Testnet
+        </span>
+        <button id="connectBtn" class="btn btn-connect">
+          🦊 Connect Wallet
+        </button>
+      </div>
+    </header>
+
+    <!-- Status Bar -->
+    <div id="statusBar" class="status-bar hidden"></div>
+
+    <!-- Hero Section (before wallet connect) -->
+    <section id="heroSection" class="hero">
+      <div class="hero-content">
+        <span class="hero-badge">Powered by Ethereum & Solidity</span>
+        <h2 class="hero-title">
+          Decentralized Voting<br />
+          <span class="gradient-text">On the Blockchain</span>
+        </h2>
+        <p class="hero-subtitle">
+          A transparent voting system where every vote is recorded permanently
+          on the Ethereum blockchain. No central authority. No tampering. Fully verifiable.
+        </p>
+
+        <!-- How it Works -->
+        <div class="how-it-works">
+          <h3>How It Works</h3>
+          <div class="steps-row">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-icon">🦊</div>
+              <div class="step-label">Connect Wallet</div>
+              <div class="step-desc">Link MetaMask wallet to the DApp</div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-icon">📝</div>
+              <div class="step-label">Add Candidates</div>
+              <div class="step-desc">Contract owner adds candidates to ballot</div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-icon">🗳️</div>
+              <div class="step-label">Cast a Vote</div>
+              <div class="step-desc">Choose a candidate and confirm on-chain</div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+              <div class="step-number">4</div>
+              <div class="step-icon">📊</div>
+              <div class="step-label">View Results</div>
+              <div class="step-desc">Results update in real-time from blockchain</div>
+            </div>
+          </div>
+        </div>
+
+        <button id="heroConnectBtn" class="btn btn-hero">
+          🦊 Connect MetaMask to Get Started
+        </button>
+        <p class="hero-note">Requires <strong>Sepolia Test Network</strong> selected in MetaMask</p>
+      </div>
+    </section>
+
+    <!-- Main Content (after wallet connect) -->
+    <main id="mainContent" class="hidden">
+
+      <!-- Flow indicator -->
+      <div class="flow-bar">
+        <div class="flow-step completed" id="flowStep1">
+          <span class="flow-dot">✓</span>
+          <span>Wallet Connected</span>
+        </div>
+        <div class="flow-line"></div>
+        <div class="flow-step" id="flowStep2">
+          <span class="flow-dot">2</span>
+          <span>Add Candidates</span>
+        </div>
+        <div class="flow-line"></div>
+        <div class="flow-step" id="flowStep3">
+          <span class="flow-dot">3</span>
+          <span>Vote</span>
+        </div>
+        <div class="flow-line"></div>
+        <div class="flow-step" id="flowStep4">
+          <span class="flow-dot">4</span>
+          <span>View Results</span>
+        </div>
+      </div>
+
+      <!-- Wallet Info -->
+      <section id="walletInfo" class="card wallet-card">
+        <div class="card-header">
+          <h2>✅ Step 1: Wallet Connected</h2>
+        </div>
+        <p class="card-desc">MetaMask wallet is linked to the DApp. All transactions will be signed using this wallet address.</p>
+        <div class="wallet-details">
+          <div class="wallet-detail">
+            <span class="label">Wallet Address</span>
+            <span id="walletAddress" class="value address">-</span>
+          </div>
+          <div class="wallet-detail">
+            <span class="label">Network</span>
+            <span id="networkName" class="value">-</span>
+          </div>
+          <div class="wallet-detail">
+            <span class="label">Vote Status</span>
+            <span id="voteStatus" class="value">-</span>
+          </div>
+        </div>
+        <div class="info-box">
+          💡 The wallet address acts as a unique voter ID on the blockchain. Each address can vote only once.
+        </div>
+      </section>
+
+      <!-- Owner Panel -->
+      <section id="ownerPanel" class="card owner-card hidden">
+        <div class="card-header">
+          <h2>📝 Step 2: Add Candidates</h2>
+          <span class="badge badge-owner">Contract Owner</span>
+        </div>
+        <p class="card-desc">
+          The contract deployer can add candidates to the ballot. This calls the
+          <code>addCandidate()</code> function on the smart contract, which stores the candidate name on-chain.
+        </p>
+        <div class="input-group">
+          <input
+            id="candidateNameInput"
+            type="text"
+            placeholder="Enter candidate name..."
+          />
+          <button id="addCandidateBtn" class="btn btn-add">
+            ➕ Add Candidate
+          </button>
+        </div>
+        <div class="info-box">
+          💡 Each "Add Candidate" action creates a blockchain transaction. It needs to be confirmed in MetaMask with a small gas fee (in test ETH).
+        </div>
+      </section>
+
+      <!-- Candidates & Voting -->
+      <section id="candidatesSection" class="card">
+        <div class="card-header">
+          <h2>🗳️ Step 3: Cast a Vote</h2>
+          <span id="totalVotes" class="badge badge-votes">0 total votes</span>
+        </div>
+        <p class="card-desc">
+          Click "Cast Vote" on a preferred candidate. This calls the <code>vote()</code> function
+          on the smart contract. The contract verifies the address hasn't voted before, then records the vote permanently on the blockchain.
+        </p>
+        <div id="candidatesList" class="candidates-grid"></div>
+        <div id="noCandidates" class="empty-state hidden">
+          <span class="empty-icon">📭</span>
+          <p>No candidates have been added yet.</p>
+          <p class="muted">The contract owner needs to add candidates first using the Admin Panel above.</p>
+        </div>
+        <div class="info-box">
+          💡 Once a vote is cast, the smart contract's <code>hasVoted</code> mapping marks that address as "voted", preventing double-voting. This logic runs entirely on-chain.
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section id="resultsSection" class="card results-card hidden">
+        <div class="card-header">
+          <h2>📊 Step 4: Live Results</h2>
+        </div>
+        <p class="card-desc">
+          These results are read directly from the blockchain using the <code>getCandidate()</code>
+          function. Anyone can verify them on
+          <a href="https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd" target="_blank">Sepolia Etherscan</a>.
+        </p>
+        <div id="resultsChart" class="results-chart"></div>
+      </section>
+
+      <!-- Tech Explanation -->
+      <section class="card tech-card">
+        <div class="card-header">
+          <h2>⚙️ What's Happening Under the Hood</h2>
+        </div>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <div class="tech-icon">📜</div>
+            <h4>Smart Contract (Solidity)</h4>
+            <p>The voting logic lives in a Solidity smart contract deployed on Ethereum. It stores candidates, tracks votes, and enforces one-vote-per-address.</p>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">🌐</div>
+            <h4>Frontend (HTML/CSS/JS)</h4>
+            <p>This web page connects to the blockchain using ethers.js. It reads data from the contract and sends transactions when a vote is cast.</p>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">🦊</div>
+            <h4>MetaMask Wallet</h4>
+            <p>MetaMask signs transactions with the wallet's private key and broadcasts them to the Sepolia test network.</p>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">⛓️</div>
+            <h4>Sepolia Testnet</h4>
+            <p>A public Ethereum test network where we deploy and test our contract using free test ETH, without spending real money.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        Built with <strong>Solidity</strong>, <strong>Ethers.js v6</strong>, and
+        <strong>Hardhat</strong> on the <strong>Sepolia Testnet</strong>
+      </p>
+      <p class="footer-sub">
+        Contract:
+        <a href="https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd" target="_blank">
+          0x5ef78...58cDd ↗
+        </a>
+      </p>
+    </footer>
+
+    <!-- ethers.js v6 via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
