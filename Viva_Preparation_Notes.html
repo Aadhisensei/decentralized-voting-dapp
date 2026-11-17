@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Viva Preparation Notes - VoteChain DApp</title>
+<style>
+  @media print { body { padding: 10px; } pre { page-break-inside: avoid; } h2, h3 { page-break-after: avoid; } }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; line-height: 1.65; padding: 30px 40px; max-width: 850px; margin: 0 auto; color: #1a1a1a; }
+  h1 { font-size: 24px; border-bottom: 3px solid #7c3aed; padding-bottom: 10px; color: #7c3aed; margin-bottom: 20px; }
+  h2 { font-size: 17px; margin-top: 32px; color: #1a1a1a; border-bottom: 2px solid #7c3aed; padding-bottom: 6px; }
+  h3 { font-size: 14px; color: #444; margin-top: 22px; }
+  h4 { font-size: 13px; color: #7c3aed; margin-top: 16px; }
+  p { margin: 8px 0; }
+  code { background: #f0ebff; padding: 1px 5px; border-radius: 3px; font-family: Consolas, monospace; font-size: 11px; color: #5b21b6; }
+  pre { background: #1e1e2e; color: #cdd6f4; padding: 14px 16px; border-radius: 8px; overflow-x: auto; font-size: 11px; line-height: 1.5; margin: 10px 0; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 11px; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 11px; }
+  th { background: #7c3aed; color: white; padding: 7px 10px; text-align: left; font-weight: 600; }
+  td { padding: 7px 10px; border: 1px solid #e0e0e0; }
+  tr:nth-child(even) { background: #faf8ff; }
+  strong { color: #222; }
+  hr { border: none; border-top: 1px solid #e0e0e0; margin: 24px 0; }
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 3px; }
+  a { color: #7c3aed; text-decoration: none; }
+  blockquote { border-left: 4px solid #7c3aed; padding: 8px 16px; margin: 12px 0; background: #faf8ff; }
+</style>
+</head>
+<body>
+<h1>🎓 Viva Preparation Notes — VoteChain DApp</h1>
+<hr>
+<h2>1. PROJECT OVERVIEW (30-second pitch)</h2>
+<p>&quot;VoteChain is a decentralized voting application built on the Ethereum blockchain. It allows an admin to add candidates, and any user with a MetaMask wallet can cast one vote. All votes are stored on the Sepolia testnet, making them transparent, immutable, and verifiable. The smart contract is written in Solidity, the frontend uses HTML/CSS/JavaScript with ethers.js to interact with the blockchain.&quot;</p>
+<hr>
+<h2>2. DEMO WALKTHROUGH (how to present)</h2>
+<h3>Step-by-step demo flow:</h3>
+<ol>
+<li><strong>Open the DApp</strong> at <code>localhost:3000</code> or GitHub Pages link</li>
+<li><strong>Show the landing page</strong> — explain the &quot;How It Works&quot; diagram</li>
+<li><strong>Click Connect MetaMask</strong> — explain: &quot;This sends an <code>eth_requestAccounts</code> RPC call to MetaMask, which prompts the user to approve the connection&quot;</li>
+<li><strong>Show the Wallet Info</strong> — explain: &quot;The wallet address acts as the voter ID. The contract checks this address to prevent double voting&quot;</li>
+<li><strong>Show the Admin Panel</strong> — explain: &quot;This is only visible because I deployed the contract, so my address matches the <code>owner</code> variable. Other users won&#39;t see this panel&quot;</li>
+<li><strong>Add a candidate</strong> — explain: &quot;This calls the <code>addCandidate()</code> function on the smart contract. MetaMask pops up because it&#39;s a write operation that costs gas&quot;</li>
+<li><strong>Cast a vote</strong> — explain: &quot;This calls the <code>vote()</code> function. The contract first checks <code>hasVoted[myAddress]</code> is false, then sets it to true and increments the vote count&quot;</li>
+<li><strong>Show the results</strong> — explain: &quot;These are read directly from the blockchain using <code>getCandidate()</code>. Anyone can verify this on Etherscan&quot;</li>
+<li><strong>Show Etherscan</strong> — open <a href="https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd">https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd</a> to show the transactions</li>
+</ol>
+<hr>
+<h2>3. SMART CONTRACT EXPLAINED (line by line)</h2>
+<h3>File: <code>contracts/Voting.sol</code></h3>
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+</code></pre>
+<p><strong>What:</strong> License identifier. MIT means open source.
+<strong>Why:</strong> Solidity compiler gives a warning if this is missing.</p>
+<pre><code class="language-solidity">pragma solidity ^0.8.19;
+</code></pre>
+<p><strong>What:</strong> Specifies the compiler version.
+<strong>Why:</strong> <code>^0.8.19</code> means &quot;0.8.19 or higher but below 0.9.0&quot;. Version 0.8+ has built-in overflow protection.</p>
+<h3>Data Structures</h3>
+<pre><code class="language-solidity">struct Candidate {
+    uint256 id;
+    string name;
+    uint256 voteCount;
+}
+</code></pre>
+<p><strong>What:</strong> A custom data type that groups related data together.
+<strong>Why:</strong> Each candidate has an ID, a name, and a vote count.</p>
+<pre><code class="language-solidity">address public owner;
+</code></pre>
+<p><strong>What:</strong> Stores the wallet address of whoever deployed the contract.
+<strong>Why:</strong> Only the owner can add candidates. <code>public</code> auto-generates a getter function.</p>
+<pre><code class="language-solidity">uint256 public candidateCount;
+</code></pre>
+<p><strong>What:</strong> Counter that tracks how many candidates exist.
+<strong>Why:</strong> Used as the ID for the next candidate and to loop through all candidates.</p>
+<pre><code class="language-solidity">mapping(uint256 =&gt; Candidate) public candidates;
+</code></pre>
+<p><strong>What:</strong> A key-value store. Maps a candidate ID (number) to a Candidate struct.
+<strong>Why:</strong> Allows lookup of any candidate by ID. Like a dictionary/hashmap.</p>
+<pre><code class="language-solidity">mapping(address =&gt; bool) public hasVoted;
+</code></pre>
+<p><strong>What:</strong> Maps a wallet address to true/false.
+<strong>Why:</strong> Tracks whether an address has already voted. Prevents double voting.</p>
+<h3>Events</h3>
+<pre><code class="language-solidity">event CandidateAdded(uint256 indexed candidateId, string name);
+event Voted(address indexed voter, uint256 indexed candidateId);
+</code></pre>
+<p><strong>What:</strong> Events are logs stored on the blockchain.
+<strong>Why:</strong> The frontend listens for these events to auto-refresh the UI when something changes. <code>indexed</code> makes them searchable/filterable.</p>
+<h3>Modifier</h3>
+<pre><code class="language-solidity">modifier onlyOwner() {
+    require(msg.sender == owner, &quot;Only the contract owner can perform this action&quot;);
+    _;
+}
+</code></pre>
+<p><strong>What:</strong> A reusable check that runs before a function.
+<strong>Why:</strong> <code>msg.sender</code> is the address calling the function. If it&#39;s not the owner, the transaction reverts. The <code>_;</code> placeholder is where the actual function body runs.</p>
+<h3>Constructor</h3>
+<pre><code class="language-solidity">constructor() {
+    owner = msg.sender;
+}
+</code></pre>
+<p><strong>What:</strong> Runs once when the contract is deployed.
+<strong>Why:</strong> Sets the deployer&#39;s address as the owner. This can never be changed afterward.</p>
+<h3>Functions</h3>
+<h4>addCandidate()</h4>
+<pre><code class="language-solidity">function addCandidate(string calldata _name) external onlyOwner {
+    require(bytes(_name).length &gt; 0, &quot;Candidate name cannot be empty&quot;);
+    candidateCount++;
+    candidates[candidateCount] = Candidate(candidateCount, _name, 0);
+    emit CandidateAdded(candidateCount, _name);
+}
+</code></pre>
+<ul>
+<li><code>external</code> — can only be called from outside the contract (saves gas vs <code>public</code>)</li>
+<li><code>onlyOwner</code> — modifier restricts access to the contract owner</li>
+<li><code>calldata</code> — read-only memory location, cheapest for external function string parameters</li>
+<li><code>require</code> — validates input, reverts if name is empty</li>
+<li>Increments <code>candidateCount</code>, creates a new Candidate with 0 votes, emits an event</li>
+</ul>
+<h4>vote()</h4>
+<pre><code class="language-solidity">function vote(uint256 _candidateId) external {
+    require(!hasVoted[msg.sender], &quot;You have already voted&quot;);
+    require(_candidateId &gt; 0 &amp;&amp; _candidateId &lt;= candidateCount, &quot;Invalid candidate ID&quot;);
+    hasVoted[msg.sender] = true;
+    candidates[_candidateId].voteCount++;
+    emit Voted(msg.sender, _candidateId);
+}
+</code></pre>
+<ul>
+<li>No <code>onlyOwner</code> — anyone can vote</li>
+<li>First <code>require</code> — checks the caller hasn&#39;t voted before</li>
+<li>Second <code>require</code> — validates the candidate ID exists</li>
+<li>Marks the address as voted BEFORE incrementing (prevents reentrancy)</li>
+<li>Increments vote count and emits event</li>
+</ul>
+<h4>getCandidate()</h4>
+<pre><code class="language-solidity">function getCandidate(uint256 _candidateId) external view returns (uint256, string memory, uint256) {
+</code></pre>
+<ul>
+<li><code>view</code> — read-only function, doesn&#39;t modify state, costs NO gas when called from frontend</li>
+<li><code>returns</code> — sends back the candidate&#39;s id, name, and vote count</li>
+<li><code>memory</code> — temporary storage for the string return value</li>
+</ul>
+<h4>getCandidateCount()</h4>
+<pre><code class="language-solidity">function getCandidateCount() external view returns (uint256) {
+    return candidateCount;
+}
+</code></pre>
+<ul>
+<li>Simple getter to know how many candidates exist</li>
+<li>Used by the frontend to loop through all candidates</li>
+</ul>
+<hr>
+<h2>4. FRONTEND CODE EXPLAINED (app.js line by line)</h2>
+<h3>Architecture (Data Flow)</h3>
+<pre><code>Browser → MetaMask (wallet) → ethers.js (library) → Sepolia RPC → Smart Contract
+</code></pre>
+<h3>Step 1: Configuration (Lines 1-19)</h3>
+<pre><code class="language-javascript">const CONTRACT_ADDRESS = &quot;0x5ef786300ADB12516801513885C193e25ec58cDd&quot;;
+const SEPOLIA_CHAIN_ID = &quot;0xaa36a7&quot;;
+const CONTRACT_ABI = [
+  &quot;function owner() view returns (address)&quot;,
+  &quot;function vote(uint256) external&quot;,
+  // ... more function signatures
+];
+</code></pre>
+<ul>
+<li><code>CONTRACT_ADDRESS</code> — The deployed contract&#39;s address on Sepolia blockchain. This tells ethers.js WHERE to send transactions.</li>
+<li><code>SEPOLIA_CHAIN_ID</code> — Hexadecimal chain ID for Sepolia (11155111 in decimal). Used to verify the wallet is on the correct network.</li>
+<li><code>CONTRACT_ABI</code> — The Application Binary Interface. It lists every function the contract has, their parameters, and return types. ethers.js uses this to encode/decode data when talking to the contract.</li>
+</ul>
+<h3>Step 2: Wallet Connection (Lines 80-150)</h3>
+<pre><code class="language-javascript">// Check if MetaMask is installed
+if (!window.ethereum) { alert(&quot;MetaMask not installed!&quot;); return; }
+
+// Request wallet access
+const accounts = await window.ethereum.request({ method: &quot;eth_requestAccounts&quot; });
+</code></pre>
+<ul>
+<li><code>window.ethereum</code> is injected by MetaMask into every webpage</li>
+<li><code>eth_requestAccounts</code> triggers the MetaMask popup asking permission to connect</li>
+</ul>
+<pre><code class="language-javascript">// Create provider and signer
+provider = new ethers.BrowserProvider(window.ethereum);
+signer = await provider.getSigner();
+</code></pre>
+<ul>
+<li><code>Provider</code> = read-only connection to the blockchain (can query data)</li>
+<li><code>Signer</code> = a provider + the ability to sign transactions (can write data)</li>
+</ul>
+<pre><code class="language-javascript">// Network validation
+const network = await provider.getNetwork();
+if (&quot;0x&quot; + network.chainId.toString(16) !== SEPOLIA_CHAIN_ID) {
+  await window.ethereum.request({
+    method: &quot;wallet_switchEthereumChain&quot;,
+    params: [{ chainId: SEPOLIA_CHAIN_ID }],
+  });
+}
+</code></pre>
+<ul>
+<li>Checks if MetaMask is on Sepolia</li>
+<li>If not, automatically requests MetaMask to switch networks</li>
+</ul>
+<pre><code class="language-javascript">// Create contract instance
+contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+</code></pre>
+<ul>
+<li>Combines the address + ABI + signer into a contract object</li>
+<li>Now <code>contract.vote(1)</code> will automatically encode the call, send it via MetaMask, and return the result</li>
+</ul>
+<pre><code class="language-javascript">// Check if connected user is the contract owner
+const ownerAddr = await contract.owner();
+if (ownerAddr.toLowerCase() === userAddress.toLowerCase()) {
+  ownerPanel.classList.remove(&quot;hidden&quot;);
+}
+</code></pre>
+<ul>
+<li>Calls the <code>owner()</code> view function (free, no gas)</li>
+<li>Compares with the connected wallet address</li>
+<li>Shows the Admin Panel only to the owner</li>
+</ul>
+<h3>Step 3: Loading Candidates (Lines 152-230)</h3>
+<pre><code class="language-javascript">const count = Number(await contract.getCandidateCount());
+for (let i = 1; i &lt;= count; i++) {
+  const [id, name, voteCount] = await contract.getCandidate(i);
+  candidates.push({ id: Number(id), name, votes: Number(voteCount) });
+}
+</code></pre>
+<ul>
+<li>Calls <code>getCandidateCount()</code> to know how many candidates exist</li>
+<li>Loops through each candidate ID and calls <code>getCandidate(i)</code></li>
+<li>These are all <code>view</code> function calls, so they are FREE (no gas, no MetaMask popup)</li>
+<li>Results are used to build the HTML candidate cards dynamically</li>
+</ul>
+<h3>Step 4: Casting a Vote (Lines 232-246)</h3>
+<pre><code class="language-javascript">async function castVote(candidateId) {
+  const tx = await contract.vote(candidateId);  // Sends transaction
+  await tx.wait();                                // Waits for block confirmation
+  await loadCandidates();                         // Refreshes the UI
+}
+</code></pre>
+<ul>
+<li><code>contract.vote(candidateId)</code> — ethers.js encodes this into a transaction, MetaMask signs it, and broadcasts it to Sepolia</li>
+<li><code>tx.wait()</code> — waits until the transaction is mined (included in a block, ~12 seconds)</li>
+<li>After confirmation, reloads all candidates to show updated vote counts</li>
+</ul>
+<h3>Step 5: Adding a Candidate (Lines 248-272)</h3>
+<pre><code class="language-javascript">const tx = await contract.addCandidate(name);
+await tx.wait();
+</code></pre>
+<ul>
+<li>Same pattern as voting: send transaction → wait for confirmation → refresh UI</li>
+<li>This call will FAIL if the caller is not the owner (the <code>onlyOwner</code> modifier in Solidity will revert it)</li>
+</ul>
+<h3>Step 6: Event Listeners (Lines 143-145, 288-291)</h3>
+<pre><code class="language-javascript">// Blockchain events (auto-refresh when something happens on-chain)
+contract.on(&quot;CandidateAdded&quot;, () =&gt; loadCandidates());
+contract.on(&quot;Voted&quot;, () =&gt; loadCandidates());
+
+// MetaMask events (reload page if account or network changes)
+window.ethereum.on(&quot;accountsChanged&quot;, () =&gt; window.location.reload());
+window.ethereum.on(&quot;chainChanged&quot;, () =&gt; window.location.reload());
+</code></pre>
+<ul>
+<li>The contract emits events when candidates are added or votes are cast</li>
+<li>ethers.js subscribes to these events and triggers a callback</li>
+<li>If the user switches wallets or networks in MetaMask, the page reloads to reflect the new state</li>
+</ul>
+<h3>Key Components Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it is</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>window.ethereum</code></td>
+<td>MetaMask injection</td>
+<td>Entry point to connect to wallet</td>
+</tr>
+<tr>
+<td><code>BrowserProvider</code></td>
+<td>ethers.js class</td>
+<td>Read-only connection to blockchain via MetaMask</td>
+</tr>
+<tr>
+<td><code>Signer</code></td>
+<td>ethers.js class</td>
+<td>Can sign and send transactions</td>
+</tr>
+<tr>
+<td><code>Contract</code></td>
+<td>ethers.js class</td>
+<td>Wraps a deployed contract for easy function calls</td>
+</tr>
+<tr>
+<td><code>tx.wait()</code></td>
+<td>Promise</td>
+<td>Waits for transaction to be mined in a block</td>
+</tr>
+<tr>
+<td><code>contract.on()</code></td>
+<td>Event listener</td>
+<td>Subscribes to smart contract events</td>
+</tr>
+</tbody></table>
+<h3>Read vs Write operations</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Example</th>
+<th>Gas Cost</th>
+<th>MetaMask Popup?</th>
+<th>Modifies Blockchain?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Read (<code>view</code>)</td>
+<td><code>getCandidate()</code>, <code>getCandidateCount()</code>, <code>hasVoted()</code></td>
+<td>FREE</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Write</td>
+<td><code>vote()</code>, <code>addCandidate()</code></td>
+<td>Costs gas</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>5. TECHNOLOGIES USED</h2>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>What it is</th>
+<th>Role in this project</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Solidity</strong></td>
+<td>Programming language for Ethereum smart contracts</td>
+<td>Wrote the Voting contract</td>
+</tr>
+<tr>
+<td><strong>Hardhat</strong></td>
+<td>Development framework for Ethereum</td>
+<td>Compiled and deployed the contract</td>
+</tr>
+<tr>
+<td><strong>ethers.js v6</strong></td>
+<td>JavaScript library for interacting with Ethereum</td>
+<td>Frontend connects to the contract through this</td>
+</tr>
+<tr>
+<td><strong>MetaMask</strong></td>
+<td>Browser extension wallet</td>
+<td>Signs transactions and manages accounts</td>
+</tr>
+<tr>
+<td><strong>Sepolia</strong></td>
+<td>Ethereum test network</td>
+<td>Where the contract is deployed (uses free test ETH)</td>
+</tr>
+<tr>
+<td><strong>HTML/CSS/JS</strong></td>
+<td>Web technologies</td>
+<td>Built the user interface</td>
+</tr>
+<tr>
+<td><strong>Node.js / npm</strong></td>
+<td>JavaScript runtime and package manager</td>
+<td>Runs Hardhat and manages dependencies</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>6. KEY CONCEPTS TO KNOW</h2>
+<h3>What is a Smart Contract?</h3>
+<p>A program stored on the blockchain that automatically executes when conditions are met. Once deployed, it cannot be modified. It runs on every node in the network.</p>
+<h3>What is Solidity?</h3>
+<p>A statically-typed, contract-oriented programming language designed for the Ethereum Virtual Machine (EVM). Syntax is similar to JavaScript/C++.</p>
+<h3>What is Gas?</h3>
+<p>The unit of computation on Ethereum. Every operation (storing data, computing) costs gas. Users pay gas fees in ETH to incentivize miners/validators to process transactions.</p>
+<h3>What is a Testnet?</h3>
+<p>A separate blockchain network that mimics the main Ethereum network but uses worthless test ETH. Used for testing without spending real money. Sepolia is one of the main Ethereum testnets.</p>
+<h3>What is MetaMask?</h3>
+<p>A browser extension that acts as an Ethereum wallet. It stores private keys, signs transactions, and connects DApps to the blockchain.</p>
+<h3>What is ABI?</h3>
+<p>Application Binary Interface. A JSON description of the contract&#39;s functions and events. The frontend needs it to know how to encode function calls and decode responses.</p>
+<h3>What is ethers.js?</h3>
+<p>A JavaScript library that provides tools to interact with the Ethereum blockchain. It handles connecting to nodes, encoding transactions, and calling smart contract functions.</p>
+<h3>What is a Mapping?</h3>
+<p>A key-value data structure in Solidity (like a hashmap). <code>mapping(address =&gt; bool)</code> maps wallet addresses to boolean values. All keys exist by default (unset values return the default: <code>false</code> for bool, <code>0</code> for uint).</p>
+<h3>What is msg.sender?</h3>
+<p>A global variable in Solidity that holds the address of whoever is calling the current function.</p>
+<h3>What is require()?</h3>
+<p>A function that checks a condition. If the condition is <code>false</code>, the entire transaction reverts (undoes all changes) and returns the error message. Used for input validation and access control.</p>
+<h3>View vs Pure functions?</h3>
+<ul>
+<li><code>view</code> — reads blockchain state but doesn&#39;t modify it. Free to call externally.</li>
+<li><code>pure</code> — doesn&#39;t read or modify state. Used for utility calculations.</li>
+</ul>
+<h3>What is an Event in Solidity?</h3>
+<p>Events are logs emitted by the contract and stored on the blockchain. They are cheap to emit and can be listened to by frontend applications. They cannot be read by other contracts.</p>
+<h3>What is a Modifier?</h3>
+<p>A reusable piece of code that runs before (or after) a function. <code>onlyOwner</code> checks that the caller is the contract owner before allowing the function to execute.</p>
+<hr>
+<h2>7. LIKELY VIVA QUESTIONS AND ANSWERS</h2>
+<h3>About the Project</h3>
+<p><strong>Q: What is this project about?</strong>
+A: It&#39;s a decentralized voting application where users connect their MetaMask wallet and vote for candidates. All votes are stored immutably on the Ethereum Sepolia testnet using a Solidity smart contract.</p>
+<p><strong>Q: Why did you choose a voting DApp?</strong>
+A: Voting benefits most from blockchain because it requires transparency, immutability, and trust. Traditional voting systems rely on a central authority, while this removes that need entirely.</p>
+<p><strong>Q: What problem does this solve?</strong>
+A: Traditional voting can be tampered with by centralized authorities. This DApp makes every vote publicly verifiable on the blockchain while maintaining voter pseudonymity through wallet addresses.</p>
+<p><strong>Q: Can this be used in real elections?</strong>
+A: This is a proof-of-concept on a testnet. For real elections, it would need identity verification (KYC), scalability improvements, gas optimization, and possibly a Layer 2 solution to reduce costs.</p>
+<h3>About the Smart Contract</h3>
+<p><strong>Q: Explain the smart contract structure.</strong>
+A: The contract has a Candidate struct, two mappings (candidates and hasVoted), an owner variable, and four main functions: addCandidate (owner-only), vote (public), getCandidate (read-only), and getCandidateCount (read-only).</p>
+<p><strong>Q: How do you prevent double voting?</strong>
+A: The <code>hasVoted</code> mapping stores <code>true</code> for any address that has voted. The <code>vote()</code> function checks <code>require(!hasVoted[msg.sender])</code> before allowing the vote. If someone tries to vote again, the transaction reverts.</p>
+<p><strong>Q: Why use <code>external</code> instead of <code>public</code>?</strong>
+A: <code>external</code> functions can only be called from outside the contract, not internally. They are slightly cheaper in gas because they can read <code>calldata</code> directly instead of copying it to memory.</p>
+<p><strong>Q: What is <code>calldata</code> vs <code>memory</code>?</strong>
+A: <code>calldata</code> is a read-only, non-modifiable area where function arguments are stored. It&#39;s cheaper than <code>memory</code> for external functions. <code>memory</code> is a temporary read-write area that exists only during function execution.</p>
+<p><strong>Q: Why is the owner set in the constructor?</strong>
+A: The constructor runs exactly once during deployment. <code>msg.sender</code> in the constructor is the deployer&#39;s address, so they become the permanent owner.</p>
+<p><strong>Q: Can the owner be changed?</strong>
+A: No. There&#39;s no function to transfer ownership. Once deployed, the owner is fixed forever.</p>
+<p><strong>Q: What happens if someone sends ETH to this contract?</strong>
+A: The transaction would fail because there&#39;s no <code>receive()</code> or <code>fallback()</code> function. The contract doesn&#39;t handle ETH transfers.</p>
+<p><strong>Q: What is the indexed keyword in events?</strong>
+A: <code>indexed</code> parameters are stored in the event&#39;s &quot;topics&quot; (a special data structure), making them filterable/searchable. Up to 3 parameters can be indexed per event.</p>
+<h3>About the Frontend</h3>
+<p><strong>Q: How does the frontend connect to the blockchain?</strong>
+A: The frontend uses ethers.js to connect to MetaMask via <code>window.ethereum</code>. MetaMask acts as the provider (connection to Sepolia) and the signer (signs transactions with the private key).</p>
+<p><strong>Q: What is the ABI and why is it needed?</strong>
+A: The ABI (Application Binary Interface) defines the contract&#39;s functions, their parameters, and return types. ethers.js uses it to encode function calls into the binary format the EVM understands.</p>
+<p><strong>Q: How does the frontend know when a vote happens?</strong>
+A: It listens for the <code>Voted</code> event using <code>contract.on(&quot;Voted&quot;, callback)</code>. When the event is emitted on-chain, the callback triggers and reloads the candidate list.</p>
+<p><strong>Q: What&#39;s the difference between reading and writing to the contract?</strong>
+A: Read operations (view/pure functions like <code>getCandidate</code>) are free and don&#39;t need MetaMask confirmation. Write operations (like <code>vote</code>, <code>addCandidate</code>) modify blockchain state, cost gas, and require MetaMask to sign the transaction.</p>
+<p><strong>Q: Why use ethers.js instead of web3.js?</strong>
+A: ethers.js is lighter, has better TypeScript support, separates the Provider (read) and Signer (write) concepts cleanly, and is generally considered more modern and developer-friendly.</p>
+<h3>About Blockchain &amp; Ethereum</h3>
+<p><strong>Q: What is a blockchain?</strong>
+A: A distributed, immutable ledger that records transactions across many computers. No single entity controls it. Data once written cannot be altered without consensus from the network.</p>
+<p><strong>Q: What is Ethereum?</strong>
+A: A decentralized platform that runs smart contracts. Unlike Bitcoin (which only handles currency), Ethereum allows arbitrary programs to run on the blockchain through the EVM.</p>
+<p><strong>Q: What is EVM?</strong>
+A: Ethereum Virtual Machine. It&#39;s the runtime environment for smart contracts. Every Ethereum node runs the EVM to execute contract code and reach consensus on the state.</p>
+<p><strong>Q: What is a transaction?</strong>
+A: A signed message sent from one account to another. It can transfer ETH, deploy a contract, or call a contract function. Every transaction costs gas and is permanently recorded.</p>
+<p><strong>Q: What is a block?</strong>
+A: A bundle of transactions grouped together. Blocks are added to the chain approximately every 12 seconds on Ethereum. Each block references the previous block, forming the chain.</p>
+<p><strong>Q: What is gas and gas fees?</strong>
+A: Gas measures the computational work of a transaction. The gas fee = gas used × gas price. Users pay gas fees in ETH to validators who process the transaction. This prevents spam and infinite loops.</p>
+<p><strong>Q: What is the difference between mainnet and testnet?</strong>
+A: Mainnet uses real ETH with real value. Testnet (like Sepolia) uses free test ETH with no value. Developers use testnets to test their DApps before deploying to mainnet.</p>
+<p><strong>Q: What is a wallet address?</strong>
+A: A 42-character hexadecimal string (starting with 0x) derived from the public key. It identifies an account on Ethereum. Example: <code>0x5ef786300ADB12516801513885C193e25ec58cDd</code></p>
+<p><strong>Q: What is a private key?</strong>
+A: A secret 256-bit number that proves ownership of a wallet. It&#39;s used to sign transactions. Anyone with the private key has full control of that wallet. It should never be shared.</p>
+<p><strong>Q: What is Hardhat?</strong>
+A: A development environment for Ethereum. It compiles Solidity code, runs tests, deploys contracts, and provides a local blockchain for testing.</p>
+<h3>Tricky Questions</h3>
+<p><strong>Q: Is this truly decentralized?</strong>
+A: The smart contract is decentralized (runs on Ethereum nodes). However, the frontend is centralized (hosted on a server/GitHub Pages). A fully decentralized version would host the frontend on IPFS.</p>
+<p><strong>Q: What are the limitations of this DApp?</strong>
+A: (1) No voter identity verification — anyone can create multiple wallets. (2) Candidates can&#39;t be removed. (3) Voting can&#39;t be paused or ended. (4) Gas fees for each vote. (5) Frontend is centralized.</p>
+<p><strong>Q: How would you improve this project?</strong>
+A: Add a voting deadline (using <code>block.timestamp</code>), implement voter registration/whitelisting, add ability to end the election, host the frontend on IPFS, add candidate descriptions, and implement a delegate voting system.</p>
+<p><strong>Q: What is a reentrancy attack?</strong>
+A: When a contract calls an external contract, and that external contract calls back into the original contract before the first call finishes. In the <code>vote()</code> function, the state (<code>hasVoted = true</code>) is updated BEFORE any external interaction, which prevents reentrancy.</p>
+<p><strong>Q: Why Sepolia and not Goerli?</strong>
+A: Goerli has been deprecated. Sepolia is the recommended testnet for DApp development as of 2024+.</p>
+<hr>
+<h2>8. QUICK REFERENCE CARD</h2>
+<pre><code>Contract Address : 0x5ef786300ADB12516801513885C193e25ec58cDd
+Network          : Sepolia Testnet (Chain ID: 11155111)
+Solidity Version : 0.8.19
+Frontend         : HTML + CSS + JavaScript
+Web3 Library     : ethers.js v6
+Dev Framework    : Hardhat
+Wallet           : MetaMask
+
+Functions:
+  addCandidate(name)      → Owner only, costs gas
+  vote(candidateId)       → Public, costs gas, one per address
+  getCandidate(id)        → Public, free (view)
+  getCandidateCount()     → Public, free (view)
+  hasVoted(address)       → Public, free (view)
+  owner()                 → Public, free (view)
+</code></pre>
+<hr>
+<h2>9. PRE-PRESENTATION CHECKLIST</h2>
+<ul>
+<li><input disabled="" type="checkbox"> MetaMask installed and logged in</li>
+<li><input disabled="" type="checkbox"> Switched to Sepolia network</li>
+<li><input disabled="" type="checkbox"> Have Sepolia ETH in wallet (at least 0.01)</li>
+<li><input disabled="" type="checkbox"> <code>npx serve frontend</code> running at localhost:3000</li>
+<li><input disabled="" type="checkbox"> DApp loads without errors</li>
+<li><input disabled="" type="checkbox"> Can connect wallet successfully</li>
+<li><input disabled="" type="checkbox"> Can add a candidate (shows MetaMask popup)</li>
+<li><input disabled="" type="checkbox"> Can vote (shows MetaMask popup)</li>
+<li><input disabled="" type="checkbox"> Results display correctly</li>
+<li><input disabled="" type="checkbox"> Etherscan page ready in a tab: <a href="https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd">https://sepolia.etherscan.io/address/0x5ef786300ADB12516801513885C193e25ec58cDd</a></li>
+<li><input disabled="" type="checkbox"> GitHub repo accessible: <a href="https://github.com/Aadhisensei/decentralized-voting-dapp">https://github.com/Aadhisensei/decentralized-voting-dapp</a></li>
+</ul>
+
+</body>
+</html>

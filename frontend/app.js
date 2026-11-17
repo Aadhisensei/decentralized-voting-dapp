@@ -285,6 +285,63 @@ candidateNameInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") addCandidate();
 });
 
+// ─── Contract Explorer ──────────────────────────────────────
+document.getElementById("btnGetCount").addEventListener("click", async () => {
+  const res = document.getElementById("resGetCount");
+  try {
+    const count = await contract.getCandidateCount();
+    res.textContent = `uint256: ${Number(count)}`;
+    res.className = "fn-result";
+  } catch (e) {
+    res.textContent = e.reason || e.message;
+    res.className = "fn-result error-result";
+  }
+});
+
+document.getElementById("btnGetCandidate").addEventListener("click", async () => {
+  const res = document.getElementById("resGetCandidate");
+  const id = document.getElementById("inputCandidateId").value;
+  if (!id) { res.textContent = "Enter a candidate ID"; res.className = "fn-result error-result"; return; }
+  try {
+    const [cId, name, voteCount] = await contract.getCandidate(id);
+    res.textContent = `{ id: ${Number(cId)}, name: "${name}", voteCount: ${Number(voteCount)} }`;
+    res.className = "fn-result";
+  } catch (e) {
+    res.textContent = e.reason || "Invalid candidate ID";
+    res.className = "fn-result error-result";
+  }
+});
+
+document.getElementById("btnHasVoted").addEventListener("click", async () => {
+  const res = document.getElementById("resHasVoted");
+  const addr = document.getElementById("inputVoterAddr").value.trim();
+  if (!addr) {
+    // Use connected wallet if no address entered
+    document.getElementById("inputVoterAddr").value = userAddress;
+  }
+  const checkAddr = document.getElementById("inputVoterAddr").value.trim();
+  try {
+    const voted = await contract.hasVoted(checkAddr);
+    res.textContent = `bool: ${voted}`;
+    res.className = "fn-result";
+  } catch (e) {
+    res.textContent = e.reason || "Invalid address";
+    res.className = "fn-result error-result";
+  }
+});
+
+document.getElementById("btnGetOwner").addEventListener("click", async () => {
+  const res = document.getElementById("resGetOwner");
+  try {
+    const owner = await contract.owner();
+    res.textContent = `address: ${owner}`;
+    res.className = "fn-result";
+  } catch (e) {
+    res.textContent = e.reason || e.message;
+    res.className = "fn-result error-result";
+  }
+});
+
 if (window.ethereum) {
   window.ethereum.on("accountsChanged", () => window.location.reload());
   window.ethereum.on("chainChanged", () => window.location.reload());

@@ -194,6 +194,73 @@
         <div id="resultsChart" class="results-chart"></div>
       </section>
 
+      <!-- Contract Explorer -->
+      <section class="card explorer-card">
+        <div class="card-header">
+          <h2>🔍 Contract Explorer — Read Functions</h2>
+          <span class="badge badge-view">view / returns / memory</span>
+        </div>
+        <p class="card-desc">
+          Call the smart contract's <code>view</code> functions directly. These are read-only calls
+          that cost <strong>zero gas</strong> and return data stored on the blockchain.
+        </p>
+
+        <!-- Function 1: getCandidateCount -->
+        <div class="explorer-fn">
+          <div class="fn-header">
+            <code class="fn-sig">function getCandidateCount() external <strong>view</strong> <strong>returns</strong> (uint256)</code>
+          </div>
+          <div class="fn-desc">Returns the total number of candidates stored in the contract.</div>
+          <div class="fn-row">
+            <button class="btn btn-query" id="btnGetCount">▶ Call</button>
+            <div class="fn-result" id="resGetCount">—</div>
+          </div>
+        </div>
+
+        <!-- Function 2: getCandidate -->
+        <div class="explorer-fn">
+          <div class="fn-header">
+            <code class="fn-sig">function getCandidate(uint256 _id) external <strong>view</strong> <strong>returns</strong> (uint256 id, string <strong>memory</strong> name, uint256 voteCount)</code>
+          </div>
+          <div class="fn-desc">Returns the full details of a candidate. The <code>string memory</code> keyword means the name is loaded into temporary memory for the return value.</div>
+          <div class="fn-row">
+            <input type="number" class="fn-input" id="inputCandidateId" placeholder="Candidate ID (e.g. 1)" min="1" />
+            <button class="btn btn-query" id="btnGetCandidate">▶ Call</button>
+            <div class="fn-result" id="resGetCandidate">—</div>
+          </div>
+        </div>
+
+        <!-- Function 3: hasVoted -->
+        <div class="explorer-fn">
+          <div class="fn-header">
+            <code class="fn-sig">function hasVoted(address) external <strong>view</strong> <strong>returns</strong> (bool)</code>
+          </div>
+          <div class="fn-desc">Checks the <code>hasVoted</code> mapping for a given wallet address. Returns <code>true</code> if that address has already voted, <code>false</code> otherwise.</div>
+          <div class="fn-row">
+            <input type="text" class="fn-input fn-input-wide" id="inputVoterAddr" placeholder="Wallet address (0x...)" />
+            <button class="btn btn-query" id="btnHasVoted">▶ Call</button>
+            <div class="fn-result" id="resHasVoted">—</div>
+          </div>
+        </div>
+
+        <!-- Function 4: owner -->
+        <div class="explorer-fn">
+          <div class="fn-header">
+            <code class="fn-sig">function owner() public <strong>view</strong> <strong>returns</strong> (address)</code>
+          </div>
+          <div class="fn-desc">Returns the wallet address that deployed this contract. Set once in the <code>constructor()</code> and can never be changed.</div>
+          <div class="fn-row">
+            <button class="btn btn-query" id="btnGetOwner">▶ Call</button>
+            <div class="fn-result" id="resGetOwner">—</div>
+          </div>
+        </div>
+
+        <div class="info-box">
+          💡 All functions marked <code>view</code> are read-only — they don't modify blockchain state and cost <strong>zero gas</strong>.
+          No MetaMask popup appears because no transaction is being sent. The data is fetched directly from a Sepolia node.
+        </div>
+      </section>
+
       <!-- Tech Explanation -->
       <section class="card tech-card">
         <div class="card-header">
